@@ -6,7 +6,7 @@ const io = require('socket.io')(server , {cors:{ origin : "*"}})
 app.get("/" , (req , res)=>{
     res.send('hello')
 })
-const PORT = process.env.PORT|| 5000;
+const PORT = process.env.PORT|| 7000;
 server.listen(PORT , _=>{
     console.log('you are on server');
 })
