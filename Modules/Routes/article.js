@@ -122,6 +122,17 @@ route.get("/collaborationForStats", checkauth, (req, res) => {
         console.log('something went wrong ' + err)
     })
 })
+// --------------------------------------------
+
+route.get("/test", (req, res) => {
+
+    Article.find({isPublish :true}).then(posts => {
+        res.status(201).json(posts)
+    }, err => {
+        console.log('something went wrong ' + err)
+    })
+})
+// -------------------------------------------------
 route.get("/all", checkauth, (req, res) => {
     Article.find({ $and: [{ auther: { $not: { $eq: req.userData.userId } } }, { isPublish: true }] }).sort({ date: -1 }).limit(+req.query.nbArticle).then(posts => {
 
