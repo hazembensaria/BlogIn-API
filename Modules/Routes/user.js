@@ -39,32 +39,53 @@ route.post('/signUp',(req,res,next)=>{
 
 //-------------------------LogIn--------------------------------
 
-route.post("/login",(req,res,next)=>{
+route.post("/login",async(req,res,next)=>{
     let fetchedUser;
-    User.findOne({email:req.body.email}).then(user=>{ 
-        console.log(user)
-        fetchedUser=user;
-        if (!user){
-            console.log('user not found !!')
-            res.status(404).json({message:"user not found"});
-        }
-        return bcrypt.compare(req.body.password,fetchedUser.password)
-    }).then(result=>{
+   const user =await User.findOne({email:req.body.email})
+   console.log(user)
+   fetchedUser=user;
+   if(! user){
+    console.log('user not found !!')
+    return res.status(404).json({message:"user not found"});
+   }
+    const compare = await bcrypt.compare(req.body.password,fetchedUser.password);
+    console.log(compare);
+
+    if(!compare){
+         console.log('password faild !!');
+        return res.status(404).json({message:"faild to connect here!"});
+    }
+    const token=jwt.sign({email:fetchedUser.email,userId:fetchedUser._id},
+                                  "secret_this_should_be_longer",
+                                     {expiresIn: "24h"});
+    console.log(token)
+    return res.status(201).json({token, id : fetchedUser._id,  role:fetchedUser.role , name : fetchedUser.name});                                 
+
+
+//    .then(user=>{ 
+    //     console.log(user)
+    //     fetchedUser=user;
+    //     if (!user){
+    //         console.log('user not found !!')
+    //         res.status(404).json({message:"user not found"});
+    //     }
+    //     return bcrypt.compare(req.body.password,fetchedUser.password)
+    // }).then(result=>{
         
-        if(!result){
-            res.status(404).json({message:"faild to connect here!"})
-        }
-        const token=jwt.sign({email:fetchedUser.email,userId:fetchedUser._id},
-                              "secret_this_should_be_longer",
-                                 {expiresIn: "24h"}
-            );
-        console.log(token)
-        res.status(201).json({token, id : fetchedUser._id,  role:fetchedUser.role , name : fetchedUser.name});
-    }).catch(error=>{
-        console.log(error);
+    //     if(!result){
+    //         res.status(404).json({message:"faild to connect here!"})
+    //     }
+    //     const token=jwt.sign({email:fetchedUser.email,userId:fetchedUser._id},
+    //                           "secret_this_should_be_longer",
+    //                              {expiresIn: "24h"}
+    //         );
+    //     console.log(token)
+    //     res.status(201).json({token, id : fetchedUser._id,  role:fetchedUser.role , name : fetchedUser.name});
+    // }).catch(error=>{
+    //     console.log(error);
        
-        res.status(400).json({message:"somthing went wrong!"})
-    })
+    //     res.status(400).json({message:"somthing went wrong!"})
+    // })
     })
 
 
