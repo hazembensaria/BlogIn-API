@@ -41,10 +41,11 @@ route.post('/signUp',(req,res,next)=>{
 
 route.post("/login",(req,res,next)=>{
     let fetchedUser;
-    User.findOne({email:req.body.email}).then(user=>{
-        
+    User.findOne({email:req.body.email}).then(user=>{ 
+        console.log(user)
         fetchedUser=user;
         if (!user){
+            console.log('user not found !!')
             res.status(404).json({message:"user not found"});
         }
         return bcrypt.compare(req.body.password,fetchedUser.password)
@@ -58,7 +59,7 @@ route.post("/login",(req,res,next)=>{
                                  {expiresIn: "24h"}
             );
         console.log(token)
-        res.status(201).json({token:token, id : fetchedUser._id,  role:fetchedUser.role , name : fetchedUser.name});
+        res.status(201).json({token, id : fetchedUser._id,  role:fetchedUser.role , name : fetchedUser.name});
     }).catch(error=>{
         console.log(error);
        
